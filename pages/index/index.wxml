@@ -1,0 +1,45 @@
+<!--index.wxml-->
+<!-- 自定义导航栏 -->
+<view class="custom-nav" style="padding-top:{{statusBarHeight}}px">
+  <view class="search-container">
+    <view class="logo">InfoBri</view>
+    <view class="search-box" bindtap="goToSearch">
+      <view class="search-icon"></view>
+      <input type="text" placeholder="2025留学" placeholder-class="search-placeholder" disabled />
+    </view>
+    <image class="more-icon"></image>
+  </view>
+</view>
+
+<!-- 分类导航 -->
+<view class="nav-container" style="top:{{navHeight}}px">
+  <scroll-view scroll-x class="nav-scroll" enable-flex>
+    <view class="nav-item {{currentTab === index ? 'active' : ''}}" 
+          wx:for="{{categories}}" 
+          wx:key="objectId"
+          bindtap="switchTab"
+          data-index="{{index}}">
+      {{item.name}}
+    </view>
+  </scroll-view>
+</view>
+
+<scroll-view class="scrollarea" scroll-y type="list" bindscrolltolower="loadMore" enable-back-to-top enhanced show-scrollbar="{{false}}" style="margin-top:{{navHeight + 40}}px">
+  <!-- 瀑布流内容列表 -->
+  <view class="waterfall">
+    <view class="waterfall-column">
+      <view wx:for="{{leftList}}" wx:key="id" class="waterfall-item">
+        <note-card note="{{item}}"></note-card>
+      </view>
+    </view>
+    <view class="waterfall-column">
+      <view wx:for="{{rightList}}" wx:key="id" class="waterfall-item">
+        <note-card note="{{item}}"></note-card>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载更多 -->
+  <view class="loading" wx:if="{{hasMore}}">正在加载更多...</view>
+  <view class="loading" wx:else>没有更多了</view>
+</scroll-view>

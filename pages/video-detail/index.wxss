@@ -1,0 +1,689 @@
+.video-detail {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  background: #000;
+  overflow: hidden; /* 防止内容溢出 */
+}
+
+/* 视频容器包装器 */
+.video-container-wrapper {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  overflow: hidden;
+}
+
+/* 视频容器 - 包含三个视频项 */
+.video-container {
+  width: 100%;
+  height: 300vh; /* 三倍视频高度 */
+  position: relative;
+  transform: translateY(-100vh); /* 默认显示中间的视频 */
+  will-change: transform; /* 提示浏览器优化动画性能 */
+}
+
+/* 视频项 - 每个视频的容器 */
+.video-item {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  background: #000;
+}
+
+/* 当前视频项 */
+.video-item.current {
+  z-index: 2;
+}
+
+.main-video {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  background: #000;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  will-change: opacity; /* 提示浏览器优化动画性能 */
+}
+
+.main-video.visible {
+  opacity: 1;
+  z-index: 2;
+}
+
+.main-video.hidden {
+  opacity: 0;
+  z-index: 1;
+}
+
+.nav-buttons {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 110;
+  padding: 20rpx;
+  display: flex;
+  gap: 20rpx;
+}
+
+.nav-btn {
+  width: 72rpx;
+  height: 72rpx;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-back, .icon-home {
+  width: 40rpx;
+  height: 40rpx;
+  background: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
+  mask-size: cover;
+  -webkit-mask-size: cover;
+}
+
+.icon-back {
+  mask: url("data:image/svg+xml,%3Csvg t='1708747171342' class='icon' viewBox='0 0 1024 1024' version='1.1' xmlns='http://www.w3.org/2000/svg' p-id='4286'%3E%3Cpath d='M710.153924 8.980397L266.007127 460.692524a81.118646 81.118646 0 0 0 0.861532 114.476097l446.192936 441.050666a26.922883 26.922883 0 0 0 37.853573-38.284339L304.722232 536.884282a27.27288 27.27288 0 0 1-0.323074-38.445877L748.545955 46.726278A26.922883 26.922883 0 1 0 710.180847 9.00732z' p-id='4287'%3E%3C/path%3E%3C/svg%3E") no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg t='1708747171342' class='icon' viewBox='0 0 1024 1024' version='1.1' xmlns='http://www.w3.org/2000/svg' p-id='4286'%3E%3Cpath d='M710.153924 8.980397L266.007127 460.692524a81.118646 81.118646 0 0 0 0.861532 114.476097l446.192936 441.050666a26.922883 26.922883 0 0 0 37.853573-38.284339L304.722232 536.884282a27.27288 27.27288 0 0 1-0.323074-38.445877L748.545955 46.726278A26.922883 26.922883 0 1 0 710.180847 9.00732z' p-id='4287'%3E%3C/path%3E%3C/svg%3E") no-repeat;
+}
+
+.icon-home {
+  mask: url("data:image/svg+xml,%3Csvg t='1708747171342' class='icon' viewBox='0 0 1024 1024' version='1.1' xmlns='http://www.w3.org/2000/svg' p-id='4286'%3E%3Cpath d='M946.5 505L534.6 93.4c-12.5-12.5-32.7-12.5-45.2 0L77.5 505c-12 12-18.8 28.3-18.8 45.3 0 35.3 28.7 64 64 64h43.4V908c0 17.7 14.3 32 32 32H448V716h112v224h265.9c17.7 0 32-14.3 32-32V614.3h43.4c17 0 33.3-6.7 45.3-18.8 24.9-25 24.9-65.5-0.1-90.5z' p-id='4287'%3E%3C/path%3E%3C/svg%3E") no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg t='1708747171342' class='icon' viewBox='0 0 1024 1024' version='1.1' xmlns='http://www.w3.org/2000/svg' p-id='4286'%3E%3Cpath d='M946.5 505L534.6 93.4c-12.5-12.5-32.7-12.5-45.2 0L77.5 505c-12 12-18.8 28.3-18.8 45.3 0 35.3 28.7 64 64 64h43.4V908c0 17.7 14.3 32 32 32H448V716h112v224h265.9c17.7 0 32-14.3 32-32V614.3h43.4c17 0 33.3-6.7 45.3-18.8 24.9-25 24.9-65.5-0.1-90.5z' p-id='4287'%3E%3C/path%3E%3C/svg%3E") no-repeat;
+}
+
+.content-container {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 166rpx; /* 留出 action-bar 的高度 */
+  z-index: 90;
+  padding: 0;
+  color: #fff;
+  padding-bottom: 20rpx; /* 增加底部间距 */
+  transition: opacity 0.3s ease;
+  will-change: opacity; /* 提示浏览器优化动画性能 */
+}
+
+.content-container.fade {
+  opacity: 0.3;
+}
+
+.author-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30rpx;
+  padding: 0 40rpx;
+}
+
+.author-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  margin-right: 20rpx;
+}
+
+.author-name {
+  font-size: 32rpx;
+  font-weight: 600;
+  flex: 1;
+  color: #fff;
+}
+
+.follow-btn {
+  padding: 10rpx 30rpx;
+  background: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
+  border-radius: 32rpx;
+  font-size: 28rpx;
+  color: #fff;
+  font-weight: 600;
+}
+
+.follow-btn.following {
+  background: #333;
+  color: #fff;
+  font-weight: 600;
+}
+
+.note-content {
+  margin-bottom: 20rpx; /* 减小底部间距 */
+  padding: 0 40rpx;
+  position: relative;
+}
+
+.note-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 16rpx;
+}
+
+.note-text {
+  font-size: 32rpx;
+  color: #fff;
+  line-height: 1.6;
+  height: calc(1.6em * 2);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  margin: 0;
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+
+.note-text.expanded {
+  height: auto;
+  -webkit-line-clamp: unset;
+  margin-bottom: 16rpx;
+}
+
+.note-info {
+  margin-top: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 2;
+}
+
+.note-time {
+  font-size: 24rpx;
+  color: #fff;
+  font-weight: 600;
+}
+
+.note-time.show {
+  display: block;
+}
+
+.note-tags {
+  color: #fff;
+  font-size: 28rpx;
+  display: block;
+  font-weight: 600;
+}
+
+.tag-item {
+  margin-right: 12rpx;
+}
+
+.expand-btn {
+  font-size: 28rpx;
+  color: #fff;
+  padding: 4rpx 0;
+  position: relative;
+  z-index: 2;
+  font-weight: 600;
+}
+
+.expand-btn.expanded {
+  color: #fff;
+}
+
+.expand-area {
+  position: relative;
+  text-align: center;
+  margin-top: 20rpx;
+}
+
+.expand-mask {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  height: 120rpx;
+  background: linear-gradient(to top, #000, transparent);
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.expand-mask.hide {
+  display: none;
+}
+
+.progress-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 136rpx; /* 调整位置，避免与 action-bar 重叠 */
+  height: 40rpx;
+  padding: 18rpx 0;
+  background: transparent;
+  z-index: 95;
+}
+
+.progress-inner {
+  position: relative;
+  height: 4rpx;
+  background: #fff;
+  width: 0;
+  transition: width 0.1s linear;
+}
+
+.progress-inner::after {
+  content: '';
+  position: absolute;
+  right: -8rpx;
+  top: -6rpx;
+  width: 16rpx;
+  height: 16rpx;
+  background: #fff;
+  border-radius: 50%;
+}
+
+.interaction-buttons {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 20rpx 40rpx;
+  background: #000;
+  height: 160rpx;
+  box-sizing: border-box;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+}
+
+.interaction-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.icon-like, .icon-comment, .icon-collect, .icon-share {
+  width: 56rpx;
+  height: 56rpx;
+  background: #fff;
+  mask-size: cover;
+  -webkit-mask-size: cover;
+}
+
+.icon-like.active {
+  background: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
+}
+
+.interaction-btn text {
+  font-size: 24rpx;
+  color: #fff;
+  font-weight: 600;
+}
+
+.icon-like {
+  mask: url("data:image/svg+xml,%3Csvg t='1708747171342' class='icon' viewBox='0 0 1024 1024' version='1.1' xmlns='http://www.w3.org/2000/svg' p-id='4286'%3E%3Cpath d='M512 937.984c-15.36 0-29.696-5.12-41.984-14.336-4.096-3.072-8.192-6.144-11.264-9.216L165.888 640C66.56 542.72 66.56 383.488 165.888 286.208c47.104-46.08 109.568-71.68 176.128-71.68s129.024 25.6 176.128 71.68L512 279.04l-6.144-6.144c47.104-46.08 109.568-71.68 176.128-71.68s129.024 25.6 176.128 71.68c99.328 97.28 99.328 256.512 0 353.792L553.984 914.432c-3.072 3.072-7.168 6.144-11.264 9.216-11.264 9.216-25.6 14.336-40.96 14.336h10.24z' p-id='4287'%3E%3C/path%3E%3C/svg%3E") no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg t='1708747171342' class='icon' viewBox='0 0 1024 1024' version='1.1' xmlns='http://www.w3.org/2000/svg' p-id='4286'%3E%3Cpath d='M512 937.984c-15.36 0-29.696-5.12-41.984-14.336-4.096-3.072-8.192-6.144-11.264-9.216L165.888 640C66.56 542.72 66.56 383.488 165.888 286.208c47.104-46.08 109.568-71.68 176.128-71.68s129.024 25.6 176.128 71.68L512 279.04l-6.144-6.144c47.104-46.08 109.568-71.68 176.128-71.68s129.024 25.6 176.128 71.68c99.328 97.28 99.328 256.512 0 353.792L553.984 914.432c-3.072 3.072-7.168 6.144-11.264 9.216-11.264 9.216-25.6 14.336-40.96 14.336h10.24z' p-id='4287'%3E%3C/path%3E%3C/svg%3E") no-repeat;
+}
+
+.icon-comment {
+  mask: url("data:image/svg+xml,%3Csvg t='1708747171342' class='icon' viewBox='0 0 1024 1024' version='1.1' xmlns='http://www.w3.org/2000/svg' p-id='4286'%3E%3Cpath d='M512 65.984C229.232 65.984 0 266.08 0 512.064c0 97.264 32.768 191.264 94.72 271.296L66.56 866.304c-3.072 9.216-3.584 18.944 0 28.16 4.608 11.776 13.824 20.992 25.6 25.6 6.144 2.56 12.8 3.584 19.456 3.584 6.656 0 13.312-1.024 19.456-3.584l89.088-31.744c89.088 56.832 193.536 89.088 293.376 89.088 282.624 0 512-200.192 512-465.92C1024 266.08 794.624 65.984 512 65.984z' p-id='4287'%3E%3C/path%3E%3C/svg%3E") no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg t='1708747171342' class='icon' viewBox='0 0 1024 1024' version='1.1' xmlns='http://www.w3.org/2000/svg' p-id='4286'%3E%3Cpath d='M512 65.984C229.232 65.984 0 266.08 0 512.064c0 97.264 32.768 191.264 94.72 271.296L66.56 866.304c-3.072 9.216-3.584 18.944 0 28.16 4.608 11.776 13.824 20.992 25.6 25.6 6.144 2.56 12.8 3.584 19.456 3.584 6.656 0 13.312-1.024 19.456-3.584l89.088-31.744c89.088 56.832 193.536 89.088 293.376 89.088 282.624 0 512-200.192 512-465.92C1024 266.08 794.624 65.984 512 65.984z' p-id='4287'%3E%3C/path%3E%3C/svg%3E") no-repeat;
+}
+
+.icon-collect {
+  mask: url("data:image/svg+xml,%3Csvg t='1708747171342' class='icon' viewBox='0 0 1024 1024' version='1.1' xmlns='http://www.w3.org/2000/svg' p-id='4286'%3E%3Cpath d='M908.1 353.1l-253.9-36.9L540.7 86.1c-3.1-6.3-8.2-11.4-14.5-14.5-15.8-7.8-35-1.3-42.9 14.5L369.8 316.2l-253.9 36.9c-7 1-13.4 4.3-18.3 9.3-12.3 12.7-12.1 32.9 0.6 45.3l183.7 179.1-43.4 252.9c-1.2 6.9-0.1 14.1 3.2 20.3 8.2 15.6 27.6 21.7 43.2 13.4L512 754l227.1 119.4c6.2 3.3 13.4 4.4 20.3 3.2 17.4-3 29.1-19.5 26.1-36.9l-43.4-252.9 183.7-179.1c5-4.9 8.3-11.3 9.3-18.3 2.7-17.5-9.5-33.7-27-36.3z'/%3E%3C/svg%3E") no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg t='1708747171342' class='icon' viewBox='0 0 1024 1024' version='1.1' xmlns='http://www.w3.org/2000/svg' p-id='4286'%3E%3Cpath d='M908.1 353.1l-253.9-36.9L540.7 86.1c-3.1-6.3-8.2-11.4-14.5-14.5-15.8-7.8-35-1.3-42.9 14.5L369.8 316.2l-253.9 36.9c-7 1-13.4 4.3-18.3 9.3-12.3 12.7-12.1 32.9 0.6 45.3l183.7 179.1-43.4 252.9c-1.2 6.9-0.1 14.1 3.2 20.3 8.2 15.6 27.6 21.7 43.2 13.4L512 754l227.1 119.4c6.2 3.3 13.4 4.4 20.3 3.2 17.4-3 29.1-19.5 26.1-36.9l-43.4-252.9 183.7-179.1c5-4.9 8.3-11.3 9.3-18.3 2.7-17.5-9.5-33.7-27-36.3z'/%3E%3C/svg%3E") no-repeat;
+}
+
+.icon-collect.active {
+  background: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
+}
+
+.icon-share {
+  mask: url("data:image/svg+xml,%3Csvg t='1708747171342' class='icon' viewBox='0 0 1024 1024' version='1.1' xmlns='http://www.w3.org/2000/svg' p-id='4286'%3E%3Cpath d='M768 686.08c-32.768 0-62.464 12.288-85.504 32.256L375.808 573.44c2.048-10.752 3.072-21.504 3.072-32.768 0-11.264-1.024-22.016-3.072-32.768l306.688-144.896c23.04 19.968 52.736 32.256 85.504 32.256 72.192 0 131.072-58.88 131.072-131.072S840.192 133.12 768 133.12s-131.072 58.88-131.072 131.072c0 11.264 1.024 22.016 3.072 32.768L333.312 441.856C310.272 421.888 280.576 409.6 247.808 409.6c-72.192 0-131.072 58.88-131.072 131.072s58.88 131.072 131.072 131.072c32.768 0 62.464-12.288 85.504-32.256l306.688 144.896c-2.048 10.752-3.072 21.504-3.072 32.768 0 72.192 58.88 131.072 131.072 131.072s131.072-58.88 131.072-131.072S840.192 686.08 768 686.08z' p-id='4287'%3E%3C/path%3E%3C/svg%3E") no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg t='1708747171342' class='icon' viewBox='0 0 1024 1024' version='1.1' xmlns='http://www.w3.org/2000/svg' p-id='4286'%3E%3Cpath d='M768 686.08c-32.768 0-62.464 12.288-85.504 32.256L375.808 573.44c2.048-10.752 3.072-21.504 3.072-32.768 0-11.264-1.024-22.016-3.072-32.768l306.688-144.896c23.04 19.968 52.736 32.256 85.504 32.256 72.192 0 131.072-58.88 131.072-131.072S840.192 133.12 768 133.12s-131.072 58.88-131.072 131.072c0 11.264 1.024 22.016 3.072 32.768L333.312 441.856C310.272 421.888 280.576 409.6 247.808 409.6c-72.192 0-131.072 58.88-131.072 131.072s58.88 131.072 131.072 131.072c32.768 0 62.464-12.288 85.504-32.256l306.688 144.896c-2.048 10.752-3.072 21.504-3.072 32.768 0 72.192 58.88 131.072 131.072 131.072s131.072-58.88 131.072-131.072S840.192 686.08 768 686.08z' p-id='4287'%3E%3C/path%3E%3C/svg%3E") no-repeat;
+}
+
+/* 增加所有文字的字重 */
+.author-name,
+.note-text,
+.note-tags,
+.expand-btn,
+.interaction-btn text {
+  font-weight: 600;
+  color: #fff;
+}
+
+/* 评论弹出层样式 */
+.comment-popup {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+  visibility: hidden;
+  transform: translateY(100%);
+  transition: all 0.3s ease;
+}
+
+.comment-popup.show {
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.comment-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.comment-popup.show .comment-mask {
+  opacity: 1;
+}
+
+.comment-container {
+  position: relative;
+  background: #fff;
+  border-radius: 24rpx 24rpx 0 0;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 120rpx);
+  height: 60vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.comment-header {
+  padding: 32rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.comment-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.close-btn {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-close {
+  width: 32rpx;
+  height: 32rpx;
+  background: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
+  mask: url("data:image/svg+xml,%3Csvg t='1708747171342' class='icon' viewBox='0 0 1024 1024' version='1.1' xmlns='http://www.w3.org/2000/svg' p-id='4286'%3E%3Cpath d='M512 456.310154L94.247385 38.557538a39.542154 39.542154 0 0 0-55.689847 0 39.542154 39.542154 0 0 0 0 55.689847L456.310154 512 38.557538 929.752615a39.542154 39.542154 0 0 0 0 55.689847 39.542154 39.542154 0 0 0 55.689847 0L512 567.689846l417.752615 417.752616c15.163077 15.163077 40.526769 15.163077 55.689847 0a39.542154 39.542154 0 0 0 0-55.689847L567.689846 512 985.442462 94.247385a39.542154 39.542154 0 0 0 0-55.689847 39.542154 39.542154 0 0 0-55.689847 0L512 456.310154z' p-id='4287'%3E%3C/path%3E%3C/svg%3E") no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg t='1708747171342' class='icon' viewBox='0 0 1024 1024' version='1.1' xmlns='http://www.w3.org/2000/svg' p-id='4286'%3E%3Cpath d='M512 456.310154L94.247385 38.557538a39.542154 39.542154 0 0 0-55.689847 0 39.542154 39.542154 0 0 0 0 55.689847L456.310154 512 38.557538 929.752615a39.542154 39.542154 0 0 0 0 55.689847 39.542154 39.542154 0 0 0 55.689847 0L512 567.689846l417.752615 417.752616c15.163077 15.163077 40.526769 15.163077 55.689847 0a39.542154 39.542154 0 0 0 0-55.689847L567.689846 512 985.442462 94.247385a39.542154 39.542154 0 0 0 0-55.689847 39.542154 39.542154 0 0 0-55.689847 0L512 456.310154z' p-id='4287'%3E%3C/path%3E%3C/svg%3E") no-repeat;
+  mask-size: cover;
+  -webkit-mask-size: cover;
+}
+
+.comment-list {
+  flex: 1;
+  overflow: hidden;
+}
+
+.comment-item {
+  padding: 32rpx;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.comment-user {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.user-avatar {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  margin-right: 16rpx;
+}
+
+.user-info {
+  flex: 1;
+}
+
+.user-name {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 600;
+}
+
+.comment-time {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 4rpx;
+}
+
+.comment-content {
+  font-size: 28rpx;
+  color: #333;
+  line-height: 1.6;
+}
+
+.comment-input-area {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 20rpx 32rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  background: #fff;
+  border-top: 1rpx solid #f5f5f5;
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.comment-input {
+  flex: 1;
+  height: 72rpx;
+  background: #f5f5f5;
+  border-radius: 36rpx;
+  padding: 0 32rpx;
+  font-size: 28rpx;
+}
+
+.send-btn {
+  padding: 16rpx 32rpx;
+  background: #f5f5f5;
+  color: #999;
+  border-radius: 36rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.send-btn.active {
+  background: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
+  color: #fff;
+}
+
+/* 加载状态提示样式 */
+.loading-tips {
+  padding: 20rpx 0;
+  text-align: center;
+  color: #999;
+  font-size: 24rpx;
+}
+
+.loading-tips .loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loading-tips .no-more {
+  color: #999;
+}
+
+.empty-tips {
+  padding: 60rpx 0;
+  text-align: center;
+  color: #999;
+  font-size: 28rpx;
+}
+
+/* 添加手势指示器样式 */
+.gesture-indicator {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.gesture-indicator.active {
+  opacity: 1;
+}
+
+.gesture-indicator::after {
+  content: '';
+  width: 40rpx;
+  height: 40rpx;
+  border: 4rpx solid #fff;
+  border-radius: 50%;
+}
+
+/* 添加重置位置的动画效果 */
+.reset-position {
+  transition: transform 0.3s ease;
+}
+
+/* 视频切换提示 */
+.switch-tips {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.switch-tips.up {
+  opacity: 0.8;
+  transform: translate(-50%, -60%);
+}
+
+.switch-tips.down {
+  opacity: 0.8;
+  transform: translate(-50%, -40%);
+}
+
+.switch-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20rpx;
+  position: relative;
+}
+
+.switch-icon::before {
+  content: '';
+  width: 30rpx;
+  height: 30rpx;
+  border-left: 4rpx solid #fff;
+  border-bottom: 4rpx solid #fff;
+  position: absolute;
+}
+
+.switch-icon.up::before {
+  transform: rotate(-135deg);
+  margin-top: 10rpx;
+}
+
+.switch-icon.down::before {
+  transform: rotate(45deg);
+  margin-top: -10rpx;
+}
+
+.switch-text {
+  color: #fff;
+  font-size: 28rpx;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.5);
+}
+
+/* 加载提示 */
+.loading-more {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 30%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.loading-spinner {
+  width: 60rpx;
+  height: 60rpx;
+  border: 4rpx solid rgba(255, 255, 255, 0.3);
+  border-top: 4rpx solid #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20rpx;
+}
+
+.loading-text {
+  color: #fff;
+  font-size: 28rpx;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.5);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 视频阴影层 - 增加过渡效果 */
+.video-shadow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.video-shadow.active {
+  opacity: 1;
+}
+
+/* 底部操作栏淡出效果 */
+action-bar.fade {
+  opacity: 0.3;
+} 

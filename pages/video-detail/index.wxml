@@ -1,0 +1,200 @@
+<view class="video-detail" 
+  bindtouchstart="handleTouchStart" 
+  bindtouchmove="handleTouchMove" 
+  bindtouchend="handleTouchEnd">
+  <!-- 视频播放区域 - 使用三个视频容器实现无缝切换 -->
+  <view class="video-container-wrapper">
+    <view class="video-container" style="{{videoContainerStyle}}">
+      <!-- 上一个视频（预加载） -->
+      <view class="video-item">
+        <video 
+          id="prevVideo"
+          class="main-video {{prevVideoVisible ? 'visible' : 'hidden'}}" 
+          src="{{prevVideo.video}}"
+          object-fit="cover"
+          autoplay="{{false}}"
+          show-center-play-btn="{{false}}"
+          controls="{{false}}"
+          loop="{{true}}"
+          enable-progress-gesture="{{false}}"
+          initial-time="0"
+          show-fullscreen-btn="{{false}}"
+          custom-cache="{{false}}"
+        ></video>
+      </view>
+      
+      <!-- 当前视频 -->
+      <view class="video-item current">
+        <video 
+          id="currentVideo"
+          class="main-video {{currentVideoVisible ? 'visible' : 'hidden'}}" 
+          src="{{note.video}}"
+          object-fit="cover"
+          autoplay="{{true}}"
+          show-center-play-btn="{{true}}"
+          controls="{{false}}"
+          loop="{{true}}"
+          enable-progress-gesture="{{false}}"
+          initial-time="0"
+          bindplay="onVideoPlay"
+          bindpause="onVideoPause"
+          binderror="onVideoError"
+          bindtimeupdate="onTimeUpdate"
+          show-fullscreen-btn="{{false}}"
+          custom-cache="{{false}}"
+          bindtap="togglePlay"
+        ></video>
+      </view>
+      
+      <!-- 下一个视频（预加载） -->
+      <view class="video-item">
+        <video 
+          id="nextVideo"
+          class="main-video {{nextVideoVisible ? 'visible' : 'hidden'}}" 
+          src="{{nextVideo.video}}"
+          object-fit="cover"
+          autoplay="{{false}}"
+          show-center-play-btn="{{false}}"
+          controls="{{false}}"
+          loop="{{true}}"
+          enable-progress-gesture="{{false}}"
+          initial-time="0"
+          show-fullscreen-btn="{{false}}"
+          custom-cache="{{false}}"
+        ></video>
+      </view>
+    </view>
+  </view>
+
+  <!-- 视频阴影层 - 增加过渡效果 -->
+  <view class="video-shadow {{direction ? 'active' : ''}}"></view>
+
+  <!-- 进度条 -->
+  <view class="progress-bar" 
+    bindtouchstart="onProgressTouchStart"
+    bindtouchmove="onProgressTouchMove"
+    bindtouchend="onProgressTouchEnd">
+    <view class="progress-inner" style="width: {{progress}}%"></view>
+  </view>
+
+  <!-- 返回按钮和主页按钮 -->
+  <view class="nav-buttons" style="top: {{statusBarHeight}}px">
+    <view class="nav-btn back" bindtap="goBack">
+      <view class="icon-back"></view>
+    </view>
+    <view class="nav-btn home" bindtap="goHome">
+      <view class="icon-home"></view>
+    </view>
+  </view>
+
+  <!-- 内容区域 -->
+  <view class="content-container {{direction ? 'fade' : ''}}">
+    <!-- 作者信息 -->
+    <view class="author-info">
+      <view class="author-avatar" style="background: {{gradientBg}}"></view>
+      <view class="author-name">{{note.author.nickname || note.author}}</view>
+      <follow-button 
+        isFollowing="{{isFollowing}}" 
+        userId="{{note.author.objectId}}"
+        bind:followChange="handleFollowChange"
+      />
+    </view>
+
+    <!-- 笔记内容 -->
+    <view class="note-content">
+      <view class="note-text {{isExpanded ? 'expanded' : ''}}">
+        {{note.content}}
+        
+        <text class="note-tags" wx:if="{{note.tags && note.tags.length}}">
+          <text wx:for="{{note.tags}}" wx:key="*this" class="tag-item">#{{item}} </text>
+        </text>
+      </view>
+      <view class="note-info">
+        <text class="note-time {{isExpanded ? 'show' : ''}}">{{note.createTime}}</text>
+        <view class="expand-btn {{isExpanded ? 'expanded' : ''}}" wx:if="{{note.content.length > 50}}" bindtap="toggleExpand">
+          {{isExpanded ? '收起' : '展开全文'}}
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部操作栏 -->
+  <action-bar
+    isDark="{{true}}"
+    noteId="{{note.objectId}}"
+    commentCount="{{note.commentCount || 0}}"
+    bind:like="handleLike"
+    bind:comment="handleComment"
+    bind:favorite="handleFavorite"
+    bind:share="handleShare"
+    class="{{direction ? 'fade' : ''}}"
+  />
+
+  <!-- 评论弹出层 -->
+  <view class="comment-popup {{showComment ? 'show' : ''}}">
+    <view class="comment-mask" bindtap="hideComment"></view>
+    <view class="comment-container">
+      <view class="comment-header">
+        <text class="comment-title">共 {{note.commentCount || 0}} 条评论</text>
+        <view class="close-btn" bindtap="hideComment">
+          <view class="icon-close"></view>
+        </view>
+      </view>
+      <scroll-view 
+        scroll-y 
+        class="comment-list"
+        refresher-enabled="{{true}}"
+        refresher-triggered="{{isRefreshing}}"
+        bindrefresherrefresh="onRefresh"
+        bindscrolltolower="onLoadMore"
+        lower-threshold="50"
+      >
+        <view class="comment-item" wx:for="{{comments}}" wx:key="objectId">
+          <view class="comment-user">
+            <view class="user-avatar" style="background: {{gradientBg}}"></view>
+            <view class="user-info">
+              <view class="user-name">{{item.user.nickname}}</view>
+              <view class="comment-time">{{item.createTime}}</view>
+            </view>
+          </view>
+          <view class="comment-content">{{item.content}}</view>
+        </view>
+        <!-- 加载状态提示 -->
+        <view class="loading-tips" wx:if="{{comments.length > 0}}">
+          <view wx:if="{{isLoading && hasMore}}" class="loading">加载中...</view>
+          <view wx:if="{{!hasMore}}" class="no-more">没有更多评论了</view>
+        </view>
+        <!-- 无评论提示 -->
+        <view class="empty-tips" wx:if="{{comments.length === 0 && !isLoading}}">
+          暂无评论，快来抢沙发吧~
+        </view>
+      </scroll-view>
+      <view class="comment-input-area">
+        <input 
+          class="comment-input" 
+          placeholder="说点什么..." 
+          value="{{commentText}}"
+          bindinput="onCommentInput"
+          bindconfirm="submitComment"
+          confirm-type="send"
+        />
+        <view class="send-btn {{commentText ? 'active' : ''}}" bindtap="submitComment">发送</view>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 视频切换提示 -->
+  <view class="switch-tips {{direction === 'up' ? 'up' : direction === 'down' ? 'down' : ''}}">
+    <view class="switch-icon {{direction === 'up' ? 'up' : 'down'}}"></view>
+    <view class="switch-text">{{direction === 'up' ? '上滑切换下一个' : direction === 'down' ? '下滑切换上一个' : ''}}</view>
+  </view>
+  
+  <!-- 手势指示器 -->
+  <view class="gesture-indicator {{showGestureIndicator ? 'active' : ''}}"></view>
+  
+  <!-- 加载提示 -->
+  <view class="loading-more" wx:if="{{isLoadingMore}}">
+    <view class="loading-spinner"></view>
+    <view class="loading-text">加载中...</view>
+  </view>
+</view> 

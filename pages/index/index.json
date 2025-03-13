@@ -1,0 +1,9 @@
+{
+  "usingComponents": {
+    "note-card": "/components/note-card/index"
+  },
+  "navigationStyle": "custom",
+  "enablePullDownRefresh": true,
+  "onReachBottomDistance": 50,
+  "backgroundColor": "#ffffff"
+}
