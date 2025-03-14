@@ -75,10 +75,10 @@ Page({
   async loadCategories() {
     // 使用模拟数据
     const mockCategories = [
-      { objectId: 'c1', name: '保研', sort: 1 },
-      { objectId: 'c2', name: '考研', sort: 2 },
-      { objectId: 'c3', name: '留学', sort: 3 },
-      { objectId: 'c3', name: '工作', sort: 4 }
+      { objectId: '3f91352fd2', name: '保研', sort: 1 },
+      { objectId: 'c21b149b30', name: '考研', sort: 2 },
+      { objectId: 'a1e95483fa', name: '留学', sort: 3 },
+      { objectId: '60e204af7f', name: '工作', sort: 4 }
     ];
     
     const allCategories = [{ objectId: 'all', name: '推荐' }, ...mockCategories];

@@ -216,6 +216,7 @@ input {
   flex: 1;
   display: flex;
   flex-direction: column;
+  width: 47%;
 }
 
 .waterfall-column:first-child {
